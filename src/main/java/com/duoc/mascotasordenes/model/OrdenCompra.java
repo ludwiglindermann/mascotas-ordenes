@@ -1,20 +1,38 @@
 package com.duoc.mascotasordenes.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "ORDENES_COMPRA")
 public class OrdenCompra {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_orden")
+    @SequenceGenerator(name = "seq_orden", sequenceName = "SEQ_ORDENES_COMPRA", allocationSize = 1)
     private Long id;
+
+    @Column(name = "NOMBRE_CLIENTE", nullable = false, length = 100)
     private String nombreCliente;
+
+    @Column(name = "PRODUCTO", nullable = false, length = 200)
     private String producto;
+
+    @Column(name = "CANTIDAD", nullable = false)
     private int cantidad;
+
+    @Column(name = "PRECIO_UNITARIO", nullable = false)
     private double precioUnitario;
+
+    @Column(name = "ESTADO", nullable = false, length = 20)
     private String estado;
+
+    @Column(name = "FECHA_CREACION", length = 10)
     private String fechaCreacion;
 
     public OrdenCompra() {}
 
-    public OrdenCompra(Long id, String nombreCliente, String producto,
-                       int cantidad, double precioUnitario, String estado, String fechaCreacion) {
-        this.id = id;
+    public OrdenCompra(String nombreCliente, String producto, int cantidad,
+                       double precioUnitario, String estado, String fechaCreacion) {
         this.nombreCliente = nombreCliente;
         this.producto = producto;
         this.cantidad = cantidad;
@@ -44,7 +62,5 @@ public class OrdenCompra {
     public String getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(String fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 
-    public double getTotalOrden() {
-        return cantidad * precioUnitario;
-    }
+    public double getTotalOrden() { return cantidad * precioUnitario; }
 }
