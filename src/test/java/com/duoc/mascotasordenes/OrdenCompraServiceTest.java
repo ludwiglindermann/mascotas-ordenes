@@ -72,4 +72,48 @@ public class OrdenCompraServiceTest {
         assertEquals("CONFIRMADA", resultado.get().getEstado());
         verify(repository, times(1)).findById(1L);
     }
+
+    @Test
+    @DisplayName("Debe retornar lista vacía cuando no hay órdenes por estado")
+    void testObtenerPorEstadoVacio() {
+        // Arrange
+        when(repository.findByEstado("CANCELADA")).thenReturn(List.of());
+
+        // Act
+        List<OrdenCompraDTO> resultado = service.obtenerPorEstado("CANCELADA");
+
+        // Assert
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+        verify(repository, times(1)).findByEstado("CANCELADA");
+    }
+
+    @Test
+    @DisplayName("Debe crear una orden correctamente con estado PENDIENTE")
+    void testCrearOrden() {
+        // Arrange
+        OrdenCompraDTO dto = new OrdenCompraDTO(
+                null, "Diego Muñoz", "Cama para Perro",
+                1, 24990.0, null, null
+        );
+        OrdenCompra ordenGuardada = new OrdenCompra();
+        ordenGuardada.setId(6L);
+        ordenGuardada.setNombreCliente("Diego Muñoz");
+        ordenGuardada.setProducto("Cama para Perro");
+        ordenGuardada.setCantidad(1);
+        ordenGuardada.setPrecioUnitario(24990.0);
+        ordenGuardada.setEstado("PENDIENTE");
+        ordenGuardada.setFechaCreacion("2025-05-01");
+
+        when(repository.save(any(OrdenCompra.class))).thenReturn(ordenGuardada);
+
+        // Act
+        OrdenCompraDTO resultado = service.crearOrden(dto);
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals("PENDIENTE", resultado.getEstado());
+        assertEquals("Diego Muñoz", resultado.getNombreCliente());
+        verify(repository, times(1)).save(any(OrdenCompra.class));
+    }
 }

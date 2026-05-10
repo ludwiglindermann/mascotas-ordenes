@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -69,5 +70,37 @@ public class OrdenCompraControllerTest {
                 .andExpect(status().isCreated());
 
         verify(service, times(1)).crearOrden(any(OrdenCompraDTO.class));
+    }
+
+    @Test
+    @DisplayName("GET /ordenes/{id} debe retornar una orden con status 200")
+    void testObtenerPorId() throws Exception {
+        // Arrange
+        OrdenCompraDTO dto = new OrdenCompraDTO(
+                1L, "María González", "Comida Premium para Perro 5kg",
+                2, 15990.0, "CONFIRMADA", "2025-03-01"
+        );
+        when(service.obtenerPorId(1L)).thenReturn(Optional.of(dto));
+
+        // Act & Assert
+        mockMvc.perform(get("/ordenes/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(service, times(1)).obtenerPorId(1L);
+    }
+
+    @Test
+    @DisplayName("GET /ordenes/{id} debe retornar 404 cuando no existe")
+    void testObtenerPorIdNoEncontrado() throws Exception {
+        // Arrange
+        when(service.obtenerPorId(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        mockMvc.perform(get("/ordenes/99")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(service, times(1)).obtenerPorId(99L);
     }
 }
